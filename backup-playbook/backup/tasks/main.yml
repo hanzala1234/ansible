@@ -1,0 +1,30 @@
+---
+# tasks file for backup
+
+
+- name: Confirming file presence.....
+  register: file_stat
+  stat:
+     path: /etc/logrotate.d/httpd
+
+- meta: end_play
+  when: file_stat.stat.exists==false
+  name: Terminate if not present
+- debug:
+    msg: "{{ansible_date_time}}"
+- name: Backing up old file
+  copy:
+     src: "/etc/logrotate.d/httpd"
+     dest: /root/httpd-{{ansible_date_time.date}}-{{ansible_date_time.hour}}-{{ansible_date_time.minute}}-{{ansible_date_time.second}}
+     backup: yes
+     remote_src: yes
+
+
+- name: Copying new file 
+  copy:
+     src: "httpd"
+     dest: /etc/logrotate.d/httpd
+     backup: yes
+
+  
+

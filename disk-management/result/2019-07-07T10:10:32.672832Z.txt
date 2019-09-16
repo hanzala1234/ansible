@@ -1,0 +1,18 @@
+**********report for device 17764e52-0259-4918-b8c6-d4b99041db75 ***********************
+"[
+ execution date: 2019-07-07  
+ mount point : /
+ hostname: instance-1
+ 
+ device used: 18.8169053671%
+]"
+**********report for device 17764e52-0259-4918-b8c6-d4b99041db75 ***********************
+**********report for device 263d2426-2244-4475-9f6e-be47884de81d ***********************
+"[
+ execution date: 2019-07-07  
+ mount point : /data
+ hostname: instance-1
+ 
+ device used: 100.0%
+]"
+**********report for device 263d2426-2244-4475-9f6e-be47884de81d ***********************

@@ -1,0 +1,92 @@
+
+  - hosts: 
+      - masterm
+      - agentm 
+      
+    vars:
+           
+
+            repo:  http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+    tasks:
+      - name: "Adding dns of puppet"
+        lineinfile:
+                     path: /etc/hosts
+                     line: "{{ master }} master.puppet.io puppet "
+        become: yes
+
+      - name: "installing puppet yum package"
+        yum:
+            name: "{{ repo }}"
+            state: present
+        become: yes
+  - hosts: agentu
+    tasks:
+        - name: "Installing puppet package in agentu"
+          apt: puppet-agent
+          state: present
+    become: yes 
+  
+  - hosts: masterm
+    tasks:
+        - name: installing puppet server
+          yum:
+              name: "puppet-server"
+              state: present
+          become: yes 
+        - name: Copying configuration to master
+          copy:
+              src: ./master_puppet.conf
+              dest: /etc/puppet/puppet.conf
+          become: yes 
+        - name: Opening firewall rules
+          command: systemctl start firewalld.service
+          
+          become: yes 
+        - name: Opening firewall rules
+          command: "{{ item }}"
+          with_items:
+           - firewall-cmd --permanent --parmanent --add-port=8140/tcp
+           - firewall-cmd --permanent --parmanent --add-port=8180/tcp
+           - firewall-cmd --permanent --parmanent --add-port=8081/tcp
+           - firewall-cmd --reload
+          become: yes  
+        - name: Starting master service
+          service:
+              name: puppetmaster
+              state: restarted
+          become: yes
+  - hosts: agentm
+    tasks: 
+      - name: installing puppet client in agentm
+        yum:
+              name: "puppet"
+              state: present
+        become: yes
+      - name: Copying configuration to agent
+        copy:
+              src: ./client_puppet.conf
+              dest: /etc/puppet/puppet.conf
+        become: yes 
+      - name: "Requesting for certificate"
+        command: puppet agent  -t
+        become: yes
+        register: command_result
+        failed_when: "'FAILED' in command_result.stderr"
+  
+  
+
+  - hosts: masterm
+    tasks:
+     - name: "signing request " 
+       shell: >
+          puppet cert sign  agentm &&
+          puppet cert sign agentu
+       register: output
+       become: yes    
+     - debug:
+         var: output.stdout
+
+
+         
+       
+       

@@ -1,0 +1,16 @@
+---
+# tasks file for execution
+- name: Installing security updates
+  register: updates
+  yum:
+        name: '*'
+        security: yes
+        state: latest
+  
+- debug:
+    msg: "{{updates}}"    
+
+- local_action:
+   module: copy 
+   dest: 'result/exec-{{ansible_date_time.iso8601}}.json' 
+   content: "{{updates}}"         

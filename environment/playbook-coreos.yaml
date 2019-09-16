@@ -1,0 +1,25 @@
+- name: performing pre-tasks
+  become: yes
+  hosts:
+     - localhost
+  #become: yes
+  vars:
+      text: |
+         # BEGIN HISTTIMEFORMAT  
+           export HISTTIMEFORMAT="%FT%T%z " \n
+         # END HISTTIMEFORMAT  
+          
+  tasks:
+  
+     - name: Run a command that uses non-posix shell-isms (in this example /bin/sh doesn't handle redirection and wildcards together but bash does)
+       raw: "echo {{item}} >> /etc/environment"
+       with_items:
+          - \# BEGIN HISTTIMEFORMAT
+          -  export HISTTIMEFORMAT="%FT%T%z " 
+          -  \# END HISTTIMEFORMAT
+       args:
+         executable: /bin/bash
+       
+          
+       
+       

@@ -1,0 +1,22 @@
+ - hosts: localhost
+   name: performing pre-tasks
+   become: yes
+   tasks:
+       - name: find
+         lineinfile: 
+           dest: /etc/environment
+           line: 'export HISTTIMEFORMAT="%FT%T%z "'
+         check_mode: yes
+         register: presence
+       
+       - name: Adding environment file
+         when: "presence.changed==true"
+         blockinfile:
+             dest: /etc/environment
+             
+             marker: ""
+             block: |
+              # BEGIN HISTTIMEFORMAT
+              export HISTTIMEFORMAT="%FT%T%z "
+              # END HISTTIMEFORMAT 
+              

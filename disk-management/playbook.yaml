@@ -1,0 +1,66 @@
+- hosts: 
+   - centos
+  vars_files: vars.yaml 
+  tasks:
+       
+    
+      - fail:
+           msg: "include and exclude values can't be true at the same time"
+        when: " include==true and exclude==true"       
+      - with_items: "{{ansible_mounts}}"
+        when: "include==false and exclude==false and ((({{item.size_total}}-{{item.size_available}})/{{item.size_total}})*100)>=threshold"
+        local_action:
+               module: blockinfile
+               block: |
+                "[
+                 execution date: {{ansible_date_time.date}}  
+                 mount point : {{item.mount}}
+                 hostname: {{ansible_hostname}}
+                 
+                 device used: {{((item.size_total-item.size_available)/item.size_total)*100}}%
+                ]"
+               dest: result/{{ansible_date_time.iso8601_micro}}.txt
+               create: true
+
+               marker: "**********report for device {{item.uuid}} ***********************"
+ 
+    
+      - with_items: "{{ansible_mounts}}"
+
+        when: "include==true and item.mount in include_values and ((({{item.size_total}}-{{item.size_available}})/{{item.size_total}})*100)>=threshold"
+        
+        local_action:
+               module: blockinfile
+               block: |
+                "[
+                 execution date: {{ansible_date_time.date}}  
+                 mount point : {{item.mount}}
+                 hostname: {{ansible_hostname}}
+                 
+                 device used: {{((item.size_total-item.size_available)/item.size_total)*100}}%
+                ]"
+               dest: result/{{ansible_date_time.iso8601_micro}}.txt
+               create: true
+
+               marker: "**********report for device {{item.uuid}} ***********************"
+      
+      - with_items: "{{ansible_mounts}}"
+
+        when: "exclude==true and item.mount not in exclude_values and ((({{item.size_total}}-{{item.size_available}})/{{item.size_total}})*100)>=threshold"
+        
+        local_action:
+               module: blockinfile
+               block: |
+                "[
+                 execution date: {{ansible_date_time.date}}  
+                 mount point : {{item.mount}}
+                 hostname: {{ansible_hostname}}
+                 
+                 device used: {{((item.size_total-item.size_available)/item.size_total)*100}}%
+                ]"
+               dest: result/{{ansible_date_time.iso8601_micro}}.txt
+               create: true
+
+               marker: "**********report for device {{item.uuid}} ***********************"       
+      
+        

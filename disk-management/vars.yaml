@@ -1,0 +1,7 @@
+include:  true
+include_values: ["/"]
+  
+exclude: false
+exclude_values: ["/data"]   
+
+threshold: 25

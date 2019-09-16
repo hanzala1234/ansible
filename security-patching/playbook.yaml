@@ -1,0 +1,7 @@
+ - hosts: centos
+   name: performing pre-tasks
+   become: yes
+   roles:
+           - {role: pre_task,bocome: yes, tags: pre_check}
+           - {role: execution,become: yes, tags: exec}
+           - {role: post_task,become: yes , tags: post_check} 

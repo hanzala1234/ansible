@@ -1,0 +1,6 @@
+ - hosts: localhost
+   name: performing pre-tasks
+   
+   roles:
+           - {role: backup,become: yes}
+

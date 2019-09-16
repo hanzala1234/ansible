@@ -1,0 +1,52 @@
+- name: Fetching Os information...
+  command: uname -a
+  register: os
+- debug:
+     msg: '{{os.stdout}}'
+
+
+- name: Fetching list all configured auto services...
+  command: chkconfig --list
+  register: config
+- debug:
+    msg: "{{config}}"
+
+
+- name: Fetching List of all containers and their current state....
+  command: docker ps --all
+  register: container
+- debug:
+     msg: "{{container.stdout_lines}}"
+
+
+- name: Fetching apache status....
+  command: service httpd status
+  ignore_errors: yes
+  changed_when: false
+  register: service_httpd_status
+- debug:
+    msg: |
+      {{ service_httpd_status.stdout }}
+      {{ service_httpd_status.stderr }}
+
+
+- name: Fetching list of all installed security packages
+  command: yum updateinfo list installed security
+  register: security
+# - debug:
+#      msg: '{{security}}'
+
+- name: Fetching list of all available security packages
+  command: yum updateinfo list updates security
+  register: security_avail
+- debug:
+     msg: '{{security_avail.stdout_lines}}'
+
+- local_action: 
+    module: copy
+    dest: 'result/installed-{{ansible_date_time.iso8601}}.json'
+    content: "{{security}}"
+- local_action:
+   module: copy 
+   dest: 'result/available-{{ansible_date_time.iso8601}}.json' 
+   content: "{{security_avail}}"     

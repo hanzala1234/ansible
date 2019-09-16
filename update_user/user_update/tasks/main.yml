@@ -1,0 +1,13 @@
+- name: Updating user authorized key
+  raw: "echo  {{item.authorized_keys}} > /home/{{item.name}}/.ssh/authorized_keys"
+  with_items:
+     - "{{user}}"
+
+- name: Updating user password
+  raw:  yes {{item.password}} | sudo passwd {{item.name}}
+  with_items:
+    - "{{user}}"      
+  
+  
+         
+   

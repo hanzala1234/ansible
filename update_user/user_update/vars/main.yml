@@ -1,0 +1,14 @@
+---
+# vars file for user_update
+name1: hanzala
+user:
+        #    - name: test1
+           #    password: "$1$SomeSalt$aIJ0bvHJBSYd307VQuuD90"
+           #    authorized_keys: test1_authorized_keys 
+
+         - name: test1
+           authorized_keys: "{{ lookup('file', 'authorized_keys') }}"
+           password: mytest1
+         - name: test2
+           authorized_keys: "{{ lookup('file', 'authorized_keys') }}"
+           password: mytest2

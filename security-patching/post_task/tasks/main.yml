@@ -1,0 +1,33 @@
+---
+# tasks file for post_task
+
+- name: Fetching list all configured auto services...
+  command: chkconfig --list
+  register: config
+- debug:
+    msg: "{{config.stdout_lines}}"
+
+
+- name: Fetching List of all containers and their current state....
+  command: docker ps --all
+  register: container
+- debug: 
+     msg: "{{container.stdout_lines}}"
+
+- name: Check if Apache is running
+  command: systemctl status apache2
+  ignore_errors: yes
+  changed_when: false
+  register: service_apache_status
+
+- name: Report status of Apache
+  debug:
+    msg: |
+      {{ service_apache_status.stdout }}
+      {{ service_apache_status.stderr }}    
+        
+- name: Fetching  list of all available security packages
+  command: yum updateinfo list updates security
+  register: security_avail              
+- debug:
+     msg: '{{security_avail.stdout_lines}}' 

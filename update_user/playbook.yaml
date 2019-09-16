@@ -1,0 +1,7 @@
+ - hosts: localhost
+   name: performing pre-tasks
+   
+   roles:
+           - {role: user_update,become: yes, tags: pre_check}
+             #    - {role: execution,become: yes, tags: exec}
+
